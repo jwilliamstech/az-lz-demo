@@ -14,7 +14,7 @@ resource "azurerm_virtual_network" "hub_vnet" {
   resource_group_name = azurerm_resource_group.hub_rg.name
   location            = var.hub_vnet_location
   depends_on          = [azurerm_resource_group.hub_rg]
-  tags     = merge(local.default_tags, var.default_tags)
+  tags                = merge(local.default_tags, var.default_tags)
 }
 
 resource "azurerm_subnet" "hub_firewall_subnet" {
@@ -22,8 +22,8 @@ resource "azurerm_subnet" "hub_firewall_subnet" {
   resource_group_name  = azurerm_virtual_network.hub_vnet.resource_group_name
   virtual_network_name = azurerm_virtual_network.hub_vnet.name
   address_prefixes     = var.hub_firewall_subnet_address_prefixes
-  
-  
+
+
   depends_on = [
     azurerm_virtual_network.hub_vnet
   ]
@@ -57,7 +57,7 @@ resource "azurerm_public_ip" "hub_fw_pip" {
   resource_group_name = azurerm_resource_group.hub_rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  tags     = merge(local.default_tags, var.default_tags)
+  tags                = merge(local.default_tags, var.default_tags)
 }
 
 resource "azurerm_public_ip" "hub_fw_mgmt_pip" {
@@ -66,7 +66,7 @@ resource "azurerm_public_ip" "hub_fw_mgmt_pip" {
   resource_group_name = azurerm_resource_group.hub_rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  tags     = merge(local.default_tags, var.default_tags)
+  tags                = merge(local.default_tags, var.default_tags)
 }
 
 resource "azurerm_firewall" "hub_fw" {
@@ -75,7 +75,7 @@ resource "azurerm_firewall" "hub_fw" {
   resource_group_name = azurerm_resource_group.hub_rg.name
   sku_name            = var.hub_fw_sku_name
   sku_tier            = var.hub_fw_sku_tier
-  tags     = merge(local.default_tags, var.default_tags)
+  tags                = merge(local.default_tags, var.default_tags)
 
   ip_configuration {
     name                 = "hub-firewall-ip-config"
@@ -108,7 +108,7 @@ resource "azurerm_log_analytics_workspace" "log" {
   sku                 = var.log_sku
   retention_in_days   = var.log_retention_days != "" ? var.log_retention_days : null
   tags                = merge(local.default_tags, var.log_tags)
-  
+
   lifecycle {
     ignore_changes = [
       tags
@@ -126,7 +126,7 @@ resource "azurerm_log_analytics_solution" "log_solution" {
   location              = var.log_location
   workspace_resource_id = azurerm_log_analytics_workspace.log.id
   workspace_name        = azurerm_log_analytics_workspace.log.name
-  tags     = merge(local.default_tags, var.default_tags)
+  tags                  = merge(local.default_tags, var.default_tags)
 
   plan {
     product   = each.value.product
@@ -145,14 +145,14 @@ resource "azurerm_log_analytics_solution" "log_solution" {
 
 # ========================== key vault  ==================================
 
-provider "azurerm" {
+/*provider "azurerm" {
   features {
     key_vault {
       purge_soft_delete_on_destroy    = true
       recover_soft_deleted_key_vaults = true
     }
   }
-}
+}*/
 
 data "azurerm_client_config" "current" {}
 
@@ -164,8 +164,8 @@ resource "azurerm_key_vault" "hub_kv" {
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_retention_days  = 7
   purge_protection_enabled    = false
-
-  sku_name = "standard"
+  rbac_authorization_enabled  = true
+  sku_name                    = "standard"
 
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id

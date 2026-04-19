@@ -54,5 +54,5 @@ module "acr" {
   acr_rg_name     = var.acr_rg_name
   acr_rg_location = var.acr_rg_location
   acr_sku         = var.acr_sku
-  kv_key_id       = module.hub.kv_encryption_key_id
+  #kv_key_id       = module.hub.kv_encryption_key_id_out # Encryption requires premium acr sku. Commented out for demo
 }

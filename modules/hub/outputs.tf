@@ -20,7 +20,7 @@ output "kv_id_out" {
   value       = azurerm_key_vault.hub_kv.id
 }
 
-output "kv_encryption_key_id" {
+/*output "kv_encryption_key_id_out" {
   description = "The id of the key vault encryption key presented as an output value"
   value       = azurerm_key_vault_key.encryption_key.id
-}
+}*/

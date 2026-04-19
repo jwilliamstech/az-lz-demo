@@ -23,12 +23,13 @@ variable "acr_sku" {
   }
 }
 
-variable "kv_key_id" {
+# Encryption requires premium acr sku. Commented out for demo
+/*variable "kv_key_id" {
   description = "ID of the key vault key"
   type        = string
   sensitive   = true
   #default     = "kv_key_id"
-}
+}*/
 
 # ========================== tags ========================================
 
