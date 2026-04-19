@@ -26,11 +26,11 @@ variable "hub_vnet_address_space" {
   #default = ["10.63.0.0/16"]
 }
 
-variable "hub_vnet_rg_name" {
+/*variable "hub_vnet_rg_name" {
   description = "The name of the resource group for the virtual network"
   type        = string
   #default = "hub-vnet"
-}
+}*/
 
 variable "hub_vnet_location" {
   description = "The location of the virtual network"
@@ -41,25 +41,85 @@ variable "hub_vnet_location" {
 variable "hub_firewall_subnet_name" {
   description = "The name of the firewall subnet within the hub vnet"
   type        = string
-  #default = "hub-fw-snet"
+  default     = "AzureFirewallSubnet" # Azure requires the exact value of "AzureFirewallSubnet" for a firewall subnet
 }
 
 variable "hub_firewall_subnet_address_prefixes" {
   description = "The address prefix of the firewall subnet within the hub vnet"
   type        = list(string)
-  #default = ["10.63.0.0/26"]
+  #default = ["10.63.0.0/26"] # Azure requires /26 or larger address space for a firewall subnet (64 possible IPs)
+}
+
+variable "hub_firewall_mgmt_subnet_name" {
+  description = "The name of the firewall subnet within the hub vnet"
+  type        = string
+  default     = "AzureFirewallSubnet" # Azure requires the exact value of "AzureFirewallSubnet" for a firewall subnet
+}
+
+variable "hub_firewall_mgmt_subnet_address_prefixes" {
+  description = "The address prefix of the firewall subnet within the hub vnet"
+  type        = list(string)
+  #default = ["10.63.0.128/26"] # Azure requires /26 or larger address space for a firewall subnet (64 possible IPs)
 }
 
 variable "hub_gateway_subnet_name" {
   description = "The name of the gateway subnet within the hub vnet"
   type        = string
-  #default = "hub-gw-snet"
+  default     = "GatewaySubnet" # Azure requires the exact value of "GatewaySubnet" for a vnet gateway subnet
 }
 
 variable "hub_gateway_subnet_address_prefixes" {
   description = "The address prefix of the gateway subnet within the hub vnet"
   type        = list(string)
-  #default = ["10.63.1.0/26"]
+  #default = ["10.63.1.0/27"] # Azure requires /27 or larger address space for gateway subnets (32 possible IPs)
+}
+
+# ========================== firewall  ===================================
+
+variable "hub_fw_pip_name" {
+  description = "The name of the hub firewall public ip"
+  type        = string
+  #default = "az-lz-demo-fw"
+}
+
+variable "hub_fw_mgmt_pip_name" {
+  description = "The name of the hub firewall public ip"
+  type        = string
+  #default = "az-lz-demo-fw"
+}
+
+variable "hub_fw_name" {
+  description = "The name of the hub firewall"
+  type        = string
+  #default = "az-lz-demo-hub"
+}
+
+variable "hub_fw_location" {
+  description = "The location of the hub firewall"
+  type        = string
+  #default = "West US"
+}
+
+variable "hub_fw_sku_name" {
+  description = "Specifies the sku of the hub firewall"
+  type        = string
+  #default     = "AZFW_VNet"
+
+  validation {
+    condition     = contains(["AZFW_Hub", "AZFW_VNet"], var.hub_fw_sku_name)
+    error_message = "The firewall sku name is incorrect."
+  }
+}
+
+variable "hub_fw_sku_tier" {
+  description = "Specifies the sku tier of the hub firewall"
+  type        = string
+  #default     = "Basic"
+
+  validation {
+    condition     = contains(["Basic", "Standard", "Premium"], var.hub_fw_sku_tier)
+    error_message = "The firewall sku tier is incorrect."
+  }
 }
 
 # ========================== log resource group  =========================
@@ -129,10 +189,21 @@ variable "solution_plan_map" {
   }
 }
 
+# ========================== key vault  ==================================
+
+variable "kv_name" {
+  description = "(Required) Specifies the name of the keyvault"
+  type        = string
+  #default     = "hub-kv"
+}
+
 # ========================== tags ========================================
 
 variable "default_tags" {
-  description = "A mapping of tags to assign to the resource"
-  type        = map(string)
-  default     = {}
+  type = map(any)
+  default = {
+    "Project"   = "az lz demo"
+    "Owner"     = "Joshua Williams"
+    "CreatedBy" = "Joshua Williams"
+  }
 }

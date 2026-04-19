@@ -1,6 +1,5 @@
 # ========================== bastion subnet ==============================
 
-# Create hub bastion host subnet
 resource "azurerm_subnet" "bastion_subnet" {
   name                                          = var.bastion_subnet_name
   resource_group_name                           = var.hub_rg_name
@@ -28,6 +27,7 @@ resource "azurerm_bastion_host" "bastion" {
   location            = var.bastion_location
   resource_group_name = var.bastion_rg_name
   sku                 = var.bastion_sku
+  tags                = merge(local.default_tags, var.default_tags)
 
   ip_configuration {
     name                 = "bastion-configuration"

@@ -17,13 +17,13 @@ variable "hub_vnet_name" {
 variable "bastion_subnet_name" {
   description = "The name of the bastion subnet within the hub vnet"
   type        = string
-  #default = "bastion-snet"
+  default     = "AzureBastionSubnet" # Azure requires the exact value of "AzureBastionSubnet" for a bastion subnet
 }
 
 variable "bastion_subnet_address_prefixes" {
   description = "The address prefix of the bastion subnet within the hub vnet"
   type        = list(string)
-  #default = ["10.63.3.0/26"]
+  #default = ["10.63.2.0/26"] # Azure requires /26 or larger address space for a bastion subnet (64 possible IPs)
 }
 
 # ========================== bastion host pip ============================
@@ -58,8 +58,21 @@ variable "bastion_sku" {
   description = "Specifies the SKU of the bastion host"
   type        = string
   #default        = "basic"
+
+  validation {
+    condition     = contains(["Developer", "Basic", "Standard", "Premium"], var.bastion_sku)
+    error_message = "The bastion host sku is incorrect."
+  }
 }
 
+# ========================== tags ========================================
 
-
-
+variable "default_tags" {
+  type = map(any)
+  default = {
+    "Project"    = "az-lz-demo"
+    "Owner"      = "jwilliamstech"
+    "Department" = "Demo"
+    "CreatedBy"  = "Joshua Williams"
+  }
+}
