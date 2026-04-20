@@ -18,7 +18,7 @@ resource "azurerm_container_registry" "acr" {
     ]
   }
 
-# Encryption requires premium acr sku. Commented out for demo
+  # Encryption requires premium acr sku. Commented out for demo
   /*encryption {
     key_vault_key_id   = var.kv_key_id
     identity_client_id = azurerm_user_assigned_identity.acr_identity.client_id
